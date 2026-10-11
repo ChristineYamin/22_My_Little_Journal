@@ -1,0 +1,79 @@
+
+# ==========================================
+# Project 22 - My Little Journal
+# AI Personal Journal & Mood Tracker
+# ==========================================
+
+# Python Virtual Environment
+.venv/
+venv/
+env/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# Private Journal Data
+journal_entries/
+private_data/
+user_uploads/
+backups/
+*.sqlite
+*.sqlite3
+*.db
+
+# Datasets
+data/*
+!data/.gitkeep
+!data/README.md
+
+# Trained Models
+models/*
+!models/.gitkeep
+!models/README.md
+
+# Node.js / React / PWA
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.vite/
+
+# Local Development Files
+*.log
+logs/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python Build Files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Streamlit Secrets
+.streamlit/secrets.toml
+
+# Testing & Temporary Files
+tmp/
+temp/
+.cache/
+*.tmp
