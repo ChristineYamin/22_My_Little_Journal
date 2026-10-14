@@ -1,0 +1,310 @@
+
+.journal-app {
+  max-width: 750px;
+  margin: 40px auto;
+  padding: 40px 24px;
+  text-align: center;
+  color: #64545e;
+}
+
+.journal-app header {
+  padding: 32px 20px;
+}
+
+.journal-app header > p:first-child {
+  color: #bd7897;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.journal-app h1 {
+  color: #a46d88;
+  font-family: Georgia, serif;
+  font-size: 36px;
+  margin: 16px 0;
+}
+
+.journal-app .garden {
+  margin-top: 30px;
+  padding: 40px 24px;
+  background: #fffaf5;
+  border: 2px solid #ebdcd9;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px #b997a218;
+}
+
+.journal-app .garden h2 {
+  color: #78967b;
+  font-family: Georgia, serif;
+}
+
+.journal-app .garden > button {
+  margin-top: 20px;
+  padding: 14px 28px;
+  background: #d78fa9;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.journal-app .garden button:hover {
+  background: #bd7390;
+}
+
+/* 🌿 Mood Garden Calendar */
+
+.garden-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  margin: 30px 0;
+}
+
+.garden-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-height: 70px;
+  padding: 8px 4px;
+
+  background: #f1f6ed;
+  border: 1px solid #dce8d8;
+  border-radius: 18px;
+
+  font-size: 24px;
+  transition: transform 0.2s ease;
+}
+
+.garden-day span {
+  font-size: 12px;
+  color: #7a907b;
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .garden-day:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* 📱 Smaller phone screens */
+
+@media (max-width: 480px) {
+  .garden-days {
+    gap: 6px;
+  }
+
+  .garden-day {
+    min-height: 52px;
+    border-radius: 12px;
+    font-size: 20px;
+  }
+
+  .journal-app {
+    margin: 12px auto;
+    padding: 20px 12px;
+  }
+
+  .journal-app .garden {
+    padding: 24px 12px;
+  }
+}
+
+/* 🌸 Highlight the selected garden day */
+
+.garden-day.selected {
+  background: #fce3eb;
+  border: 2px solid #d78fa9;
+  box-shadow: 0 3px 10px rgba(215, 143, 169, 0.2);
+  transform: translateY(-3px);
+}
+
+.garden-day:focus-visible {
+  outline: 3px solid #a46d88;
+  outline-offset: 3px;
+}
+
+
+/* 🌸 Daily Check-in Panel */
+
+.entry-form {
+  margin-top: 28px;
+  padding: 28px 20px;
+  background: #fff8fb;
+  border: 1px solid #efd9e3;
+  border-radius: 22px;
+}
+
+.entry-form h3 {
+  color: #a46d88;
+  font-family: Georgia, serif;
+  font-size: 24px;
+  margin-top: 0;
+}
+
+.entry-form p {
+  color: #786c74;
+  font-size: 14px;
+}
+
+.mood-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+
+/* Override the general garden button style */
+.journal-app .garden .mood-options button {
+  margin: 0;
+  padding: 14px 8px;
+  background: #fffdfb;
+  color: #64545e;
+  border: 1px solid #e8dce2;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.journal-app .garden .mood-options button.mood-selected {
+  background: #fce3eb;
+  border: 2px solid #d78fa9;
+  color: #92546d;
+  font-weight: 600;
+}
+
+.journal-app .garden .mood-options button:hover {
+  background: #f9edf2;
+}
+
+@media (max-width: 380px) {
+  .mood-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* 🌸 Month Navigation */
+
+.month-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.month-navigation span {
+  min-width: 130px;
+  color: #a46d88;
+  font-family: Georgia, serif;
+  font-weight: bold;
+}
+
+.journal-app .garden .month-navigation button {
+  padding: 8px 14px;
+  margin: 0;
+  background: #f5e8ee;
+  color: #a46d88;
+  border: 1px solid #ead6e1;
+  border-radius: 12px;
+}
+
+
+/* 🌷 Happiness Factors */
+
+.happiness-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed #e8cbd8;
+}
+
+.happiness-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.journal-app .garden .happiness-options button {
+  margin: 0;
+  padding: 14px 10px;
+  background: #fffdfb;
+  color: #64545e;
+  border: 1px solid #e5dedc;
+  border-radius: 16px;
+  font-size: 14px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.journal-app .garden .happiness-options button.factor-selected {
+  background: #e3f0e2;
+  border: 2px solid #91b598;
+  color: #527b5b;
+  font-weight: 600;
+}
+
+.journal-app .garden .happiness-options button:hover {
+  background: #edf5e9;
+}
+
+
+/* 💌 Gratitude Journal */
+
+.gratitude-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed #e8cbd8;
+}
+
+.gratitude-section textarea {
+  width: 100%;
+  padding: 16px;
+  background: #fffdfb;
+  color: #64545e;
+  border: 1px solid #e8dce2;
+  border-radius: 16px;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.gratitude-section textarea:focus {
+  outline: 2px solid #d78fa9;
+  outline-offset: 2px;
+}
+
+
+/* 📖 Today's Memory */
+
+.memory-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px dashed #e8cbd8;
+}
+
+.memory-section textarea {
+  width: 100%;
+  padding: 16px;
+  background: #fffdfb;
+  color: #64545e;
+  border: 1px solid #e8dce2;
+  border-radius: 16px;
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.memory-section textarea:focus {
+  outline: 2px solid #d78fa9;
+  outline-offset: 2px;
+}
+
+
+
+
+

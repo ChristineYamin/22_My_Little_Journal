@@ -77,3 +77,7 @@ tmp/
 temp/
 .cache/
 *.tmp
+
+
+
+*.db-journal
