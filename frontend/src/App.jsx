@@ -1,16 +1,23 @@
 
 import { useEffect, useState } from 'react'
 import './App.css'
+import Home from './pages/Home'
+import DailyCheckIn from './pages/DailyCheckIn'
+import Journal from './pages/Journal'
+import Insights from './pages/Insights'
+
 
 const moods = [
   { name: 'Happy', emoji: '🌸', color: '#F6B7C8' },
   { name: 'Calm', emoji: '🌿', color: '#B8D8C0' },
   { name: 'Grateful', emoji: '💜', color: '#D9C5EB' },
   { name: 'Productive', emoji: '🌻', color: '#F6D998' },
-  { name: 'Tired', emoji: '☁️', color: '#CED6E3' },
-  { name: 'Stressed', emoji: '🌧️', color: '#B7C4D9' },
+  { name: 'Tired', emoji: '🪫', color: '#CED6E3' },
+  { name: 'Stressed', emoji: '😣', color: '#EBC6A8' },
   { name: 'Sad', emoji: '💧', color: '#A9BFD8' },
+  { name: 'Depressed', emoji: '⛈️', color: '#B8B0CC' },
 ]
+
 
 const happinessFactors = [
   { name: 'Family', emoji: '🏡' },
@@ -20,6 +27,26 @@ const happinessFactors = [
   { name: 'Music', emoji: '🎵' },
   { name: 'Other', emoji: '✨' },
 ]
+
+
+const moodRecommendations = {
+  Tired: {
+    message: "You've done enough for now. Rest is productive too. 💗",
+    activity: "🛌 Take a 20-minute rest or enjoy a quiet cup of tea.",
+  },
+  Stressed: {
+    message: "You don't have to solve everything at once. 🌿",
+    activity: "🧘 Try five minutes of gentle breathing or stretching.",
+  },
+  Sad: {
+    message: "It's okay to have a difficult day. 🌷",
+    activity: "🎨 Try painting, journaling, or listening to comforting music.",
+  },
+  Depressed: {
+    message: "You deserve kindness and support, especially today. 💗",
+    activity: "🌤️ Try one small act of self-care, or reach out to someone you trust.",
+  },
+}
 
 function makeDateKey(date) {
   const year = date.getFullYear()
@@ -74,6 +101,9 @@ function App() {
   const [viewDate, setViewDate] = useState(() => new Date())
   const [selectedDay, setSelectedDay] = useState(null)
 
+  const [entryDate, setEntryDate] = useState(() => new Date())
+
+
   const [showEntryForm, setShowEntryForm] = useState(false)
   const [selectedMood, setSelectedMood] = useState(null)
   const [selectedFactors, setSelectedFactors] = useState([])
@@ -84,6 +114,7 @@ function App() {
   const [gratitude, setGratitude] = useState('')
 
   const [todaysMemory, setTodaysMemory] = useState('')
+  const [activePage, setActivePage] = useState('home')
 
   
 const [savedGratitude, setSavedGratitude] = useState(() => {
@@ -148,9 +179,32 @@ const [savedMemories, setSavedMemories] = useState(() => {
         : [...previous, factorName]
     )
   }
+  
+function openEntryForDay(day) {
+  const date = new Date(currentYear, currentMonth, day)
+  setEntryDate(date)
+  const dateKey = makeDateKey(date)
+
+  setSelectedDay(day)
+  setSelectedMood(savedMoods[dateKey] ?? null)
+
+  const factors = savedFactors[dateKey]
+  setSelectedFactors(
+    Array.isArray(factors) ? [...factors] : []
+  )
+
+  setGratitude(savedGratitude[dateKey] ?? '')
+  setTodaysMemory(savedMemories[dateKey] ?? '')
+
+  setShowEntryForm(true)
+  setActivePage('checkin')
+}
+
 
   function openTodayEntry() {
+    
     const today = new Date()
+    setEntryDate(today)
     const dateKey = makeDateKey(today)
 
     setViewDate(today)
@@ -167,13 +221,15 @@ const [savedMemories, setSavedMemories] = useState(() => {
     setTodaysMemory(savedMemories[dateKey] ?? '')
 
     setShowEntryForm(true)
+    setActivePage('checkin')
+
   }
 
   function saveTodayEntry() {
     if (!selectedMood) return
 
-    const today = new Date()
-    const dateKey = makeDateKey(today)
+    const dateToSave = entryDate
+    const dateKey = makeDateKey(dateToSave)
 
     setSavedMoods((previous) => ({
       ...previous,
@@ -200,9 +256,100 @@ const [savedMemories, setSavedMemories] = useState(() => {
 
 
     setShowEntryForm(false)
-    setViewDate(today)
-    setSelectedDay(today.getDate())
+    setViewDate(dateToSave)
+    setSelectedDay(dateToSave.getDate())
+    setActivePage('home')
+
+    }
+
+    
+function exportJournalBackup() {
+  const backup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    moods: savedMoods,
+    happinessFactors: savedFactors,
+    gratitude: savedGratitude,
+    memories: savedMemories,
   }
+
+  const file = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    { type: 'application/json' }
+  )
+
+  const url = URL.createObjectURL(file)
+  const link = document.createElement('a')
+
+  link.href = url
+  link.download = `my-little-journal-backup-${new Date()
+    .toISOString()
+    .slice(0, 10)}.json`
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+function importJournalBackup(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = () => {
+    try {
+      const backup = JSON.parse(reader.result)
+
+      const isValid =
+        backup.version === 1 &&
+        backup.moods &&
+        typeof backup.moods === 'object' &&
+        !Array.isArray(backup.moods) &&
+        backup.happinessFactors &&
+        typeof backup.happinessFactors === 'object' &&
+        !Array.isArray(backup.happinessFactors) &&
+        backup.gratitude &&
+        typeof backup.gratitude === 'object' &&
+        !Array.isArray(backup.gratitude) &&
+        backup.memories &&
+        typeof backup.memories === 'object' &&
+        !Array.isArray(backup.memories)
+
+      if (!isValid) {
+        alert('This is not a valid My Little Journal backup.')
+        return
+      }
+
+      const confirmed = window.confirm(
+        'Importing this backup will replace your current journal entries. Continue?'
+      )
+
+      if (!confirmed) return
+
+      setSavedMoods(backup.moods)
+      setSavedFactors(backup.happinessFactors)
+      setSavedGratitude(backup.gratitude)
+      setSavedMemories(backup.memories)
+
+      alert('🌷 Your journal backup has been restored!')
+    } catch {
+      alert('Could not read this backup file.')
+    } finally {
+      event.target.value = ''
+    }
+  }
+
+  reader.onerror = () => {
+    alert('Could not open this backup file.')
+    event.target.value = ''
+  }
+
+  reader.readAsText(file)
+}
+
 
   // Save moods after every change.
   useEffect(() => {
@@ -263,6 +410,63 @@ useEffect(() => {
 
   return (
     <main className="journal-app">
+      
+<nav className="app-navigation" aria-label="Main navigation">
+  <button
+    type="button"
+    onClick={() => setActivePage('home')}
+    aria-current={activePage === 'home' ? 'page' : undefined}
+  >
+    🌿 Home
+  </button>
+
+  <button
+    type="button"
+    onClick={openTodayEntry}
+    aria-current={activePage === 'checkin' ? 'page' : undefined}
+  >
+    🌸 Check-in
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setActivePage('journal')}
+    aria-current={activePage === 'journal' ? 'page' : undefined}
+  >
+    💌 Journal
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setActivePage('insights')}
+    aria-current={activePage === 'insights' ? 'page' : undefined}
+  >
+    📊 Insights
+  </button>
+  
+<div className="backup-controls">
+  <button
+    type="button"
+    onClick={exportJournalBackup}
+  >
+    💾 Export Backup
+  </button>
+  
+<label className="import-backup-button">
+  📤 Import Backup
+  <input
+    type="file"
+    accept=".json,application/json"
+    onChange={importJournalBackup}
+    style={{ display: 'none' }}
+  />
+</label>
+
+</div>
+
+</nav>
+{activePage === 'home' && (
+  <>
       <header>
         <p>✿ My Little Journal ✿</p>
         <h1>A Garden of Memories 🌷</h1>
@@ -372,6 +576,7 @@ useEffect(() => {
                           .join(' · ')}
                       </p>
                       
+                      
 
                     </div>
                   )}
@@ -379,6 +584,10 @@ useEffect(() => {
                   <div className="memory-gratitude">
                     <p>💌 What I was grateful for:</p>
                     <p>{recordedGratitude}</p>
+
+                    
+  
+
                   </div>
                 )}
 
@@ -395,6 +604,13 @@ useEffect(() => {
             ) : (
               <p>🌱 No mood recorded for this day yet.</p>
             )}
+            <button
+              type="button"
+              className="edit-day-button"
+              onClick={() => openEntryForDay(selectedDay)}
+            >
+              ✏️ {recordedMood ? 'Edit This Day' : 'Add Entry for This Day'}
+            </button>
           </div>
         )}
 
@@ -409,9 +625,26 @@ useEffect(() => {
           🌸 Add Today's Entry
         </button>
 
-        {/* Daily Check-in Form */}
-        {showEntryForm && (
+        
+      </section>
+        </>
+)}
+
+{activePage === 'checkin' && (
+  <DailyCheckIn>
+    {/* Daily Check-in Form */}
+        {showEntryForm && activePage === 'checkin' && (
           <div className="entry-form">
+            
+          <p className="entry-date">
+            📅 {entryDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </p>
+
             <h3>🌷 How are you feeling today?</h3>
             <p>Choose the mood that best describes your day.</p>
 
@@ -432,6 +665,27 @@ useEffect(() => {
                 </button>
               ))}
             </div>
+            {selectedMood && moodRecommendations[selectedMood] && (
+  <div className="mood-recommendation">
+    <h3>🌷 A Little Care for You</h3>
+
+    <p>
+      {moodRecommendations[selectedMood].message}
+    </p>
+
+    <p>
+      {moodRecommendations[selectedMood].activity}
+    </p>
+
+    {selectedMood === 'Depressed' && (
+      <p>
+        If you've been feeling this low for a while,
+        consider talking with someone you trust or
+        a mental health professional.
+      </p>
+    )}
+  </div>
+)}
 
             {/* Happiness factors */}
             <div className="happiness-section">
@@ -492,24 +746,54 @@ useEffect(() => {
                 You selected: {selectedMood} 💗
               </p>
             )}
+            
+<div className="entry-actions">
+  <button
+    type="button"
+    className="save-entry-button"
+    disabled={!selectedMood}
+    onClick={saveTodayEntry}
+  >
+    🌷 Save Entry
+  </button>
 
-            <button
-              type="button"
-              disabled={!selectedMood}
-              onClick={saveTodayEntry}
-            >
-              🌷 Save Today's Entry
-            </button>
+  <button
+    type="button"
+    className="close-entry-button"
+    onClick={() => {
+      setShowEntryForm(false)
+      setActivePage('home')
+    }}
+  >
+    ✕ Close
+  </button>
+</div>
 
-            <button
-              type="button"
-              onClick={() => setShowEntryForm(false)}
-            >
-              Close
-            </button>
+
+
+
+            
           </div>
         )}
-      </section>
+  </DailyCheckIn>
+)}
+
+{activePage === 'journal' && (
+  <Journal
+    savedMoods={savedMoods}
+    savedFactors={savedFactors}
+    savedGratitude={savedGratitude}
+    savedMemories={savedMemories}
+  />
+)}
+{activePage === 'insights' && (
+  <Insights
+  savedMoods={savedMoods}
+  savedFactors={savedFactors}
+/>
+)}
+
+
     </main>
   )
 }
